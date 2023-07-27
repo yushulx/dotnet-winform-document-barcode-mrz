@@ -28,193 +28,236 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.menuStrip2 = new System.Windows.Forms.MenuStrip();
-            this.enterLicenseKeyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.listBox1 = new System.Windows.Forms.ListBox();
-            this.label2 = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-            this.menuStrip2.SuspendLayout();
-            this.statusStrip1.SuspendLayout();
-            this.SuspendLayout();
+            pictureBox1 = new PictureBox();
+            button1 = new Button();
+            button2 = new Button();
+            pictureBox2 = new PictureBox();
+            richTextBox1 = new RichTextBox();
+            label1 = new Label();
+            menuStrip1 = new MenuStrip();
+            menuStrip2 = new MenuStrip();
+            enterLicenseKeyToolStripMenuItem = new ToolStripMenuItem();
+            statusStrip1 = new StatusStrip();
+            toolStripStatusLabel1 = new ToolStripStatusLabel();
+            listBox1 = new ListBox();
+            label2 = new Label();
+            checkBox1 = new CheckBox();
+            checkBox2 = new CheckBox();
+            checkBox3 = new CheckBox();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
+            menuStrip2.SuspendLayout();
+            statusStrip1.SuspendLayout();
+            SuspendLayout();
             // 
             // pictureBox1
             // 
-            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox1.Location = new System.Drawing.Point(6, 24);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(600, 769);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
+            pictureBox1.BorderStyle = BorderStyle.FixedSingle;
+            pictureBox1.Location = new Point(6, 24);
+            pictureBox1.Margin = new Padding(4);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(600, 769);
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox1.TabIndex = 0;
+            pictureBox1.TabStop = false;
             // 
             // button1
             // 
-            this.button1.AllowDrop = true;
-            this.button1.AutoEllipsis = true;
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.button1.Location = new System.Drawing.Point(1218, 24);
-            this.button1.Margin = new System.Windows.Forms.Padding(4);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(280, 74);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Load File";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            button1.AllowDrop = true;
+            button1.AutoEllipsis = true;
+            button1.Font = new Font("Microsoft Sans Serif", 20.25F, FontStyle.Bold, GraphicsUnit.Point);
+            button1.Location = new Point(1218, 28);
+            button1.Margin = new Padding(4);
+            button1.Name = "button1";
+            button1.Size = new Size(280, 49);
+            button1.TabIndex = 1;
+            button1.Text = "Load File";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
             // 
             // button2
             // 
-            this.button2.AllowDrop = true;
-            this.button2.AutoEllipsis = true;
-            this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.button2.Location = new System.Drawing.Point(1218, 106);
-            this.button2.Margin = new System.Windows.Forms.Padding(4);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(280, 74);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "Camera Scan";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            button2.AllowDrop = true;
+            button2.AutoEllipsis = true;
+            button2.Font = new Font("Microsoft Sans Serif", 20.25F, FontStyle.Bold, GraphicsUnit.Point);
+            button2.Location = new Point(1218, 85);
+            button2.Margin = new Padding(4);
+            button2.Name = "button2";
+            button2.Size = new Size(280, 54);
+            button2.TabIndex = 1;
+            button2.Text = "Camera Scan";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
             // 
             // pictureBox2
             // 
-            this.pictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox2.Location = new System.Drawing.Point(613, 24);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(600, 769);
-            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox2.TabIndex = 7;
-            this.pictureBox2.TabStop = false;
+            pictureBox2.BorderStyle = BorderStyle.FixedSingle;
+            pictureBox2.Location = new Point(613, 24);
+            pictureBox2.Name = "pictureBox2";
+            pictureBox2.Size = new Size(600, 769);
+            pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox2.TabIndex = 7;
+            pictureBox2.TabStop = false;
             // 
             // richTextBox1
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(1218, 221);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(280, 190);
-            this.richTextBox1.TabIndex = 8;
-            this.richTextBox1.Tag = "";
-            this.richTextBox1.Text = "";
+            richTextBox1.Location = new Point(1218, 221);
+            richTextBox1.Name = "richTextBox1";
+            richTextBox1.Size = new Size(280, 190);
+            richTextBox1.TabIndex = 8;
+            richTextBox1.Tag = "";
+            richTextBox1.Text = "";
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(1218, 194);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(98, 15);
-            this.label1.TabIndex = 9;
-            this.label1.Text = "MRZ Information";
+            label1.AutoSize = true;
+            label1.Location = new Point(1218, 194);
+            label1.Name = "label1";
+            label1.Size = new Size(98, 15);
+            label1.TabIndex = 9;
+            label1.Text = "Results";
             // 
             // menuStrip1
             // 
-            this.menuStrip1.Location = new System.Drawing.Point(0, 24);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1507, 24);
-            this.menuStrip1.TabIndex = 10;
-            this.menuStrip1.Text = "menuStrip1";
+            menuStrip1.Location = new Point(0, 24);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Size = new Size(1507, 24);
+            menuStrip1.TabIndex = 10;
+            menuStrip1.Text = "menuStrip1";
             // 
             // menuStrip2
             // 
-            this.menuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.enterLicenseKeyToolStripMenuItem});
-            this.menuStrip2.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip2.Name = "menuStrip2";
-            this.menuStrip2.Size = new System.Drawing.Size(1507, 24);
-            this.menuStrip2.TabIndex = 11;
-            this.menuStrip2.Text = "menuStrip2";
+            menuStrip2.Items.AddRange(new ToolStripItem[] { enterLicenseKeyToolStripMenuItem });
+            menuStrip2.Location = new Point(0, 0);
+            menuStrip2.Name = "menuStrip2";
+            menuStrip2.Size = new Size(1507, 24);
+            menuStrip2.TabIndex = 11;
+            menuStrip2.Text = "menuStrip2";
             // 
             // enterLicenseKeyToolStripMenuItem
             // 
-            this.enterLicenseKeyToolStripMenuItem.Name = "enterLicenseKeyToolStripMenuItem";
-            this.enterLicenseKeyToolStripMenuItem.Size = new System.Drawing.Size(110, 20);
-            this.enterLicenseKeyToolStripMenuItem.Text = "Enter License Key";
-            this.enterLicenseKeyToolStripMenuItem.Click += new System.EventHandler(this.enterLicenseKeyToolStripMenuItem_Click);
+            enterLicenseKeyToolStripMenuItem.Name = "enterLicenseKeyToolStripMenuItem";
+            enterLicenseKeyToolStripMenuItem.Size = new Size(110, 20);
+            enterLicenseKeyToolStripMenuItem.Text = "Enter License Key";
+            enterLicenseKeyToolStripMenuItem.Click += enterLicenseKeyToolStripMenuItem_Click;
             // 
             // statusStrip1
             // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 797);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1507, 22);
-            this.statusStrip1.TabIndex = 12;
-            this.statusStrip1.Text = "statusStrip1";
+            statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel1 });
+            statusStrip1.Location = new Point(0, 797);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.Size = new Size(1507, 22);
+            statusStrip1.TabIndex = 12;
+            statusStrip1.Text = "statusStrip1";
             // 
             // toolStripStatusLabel1
             // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
-            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
+            toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            toolStripStatusLabel1.Size = new Size(118, 17);
+            toolStripStatusLabel1.Text = "toolStripStatusLabel1";
             // 
             // listBox1
             // 
-            this.listBox1.AllowDrop = true;
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.ItemHeight = 15;
-            this.listBox1.Location = new System.Drawing.Point(1219, 456);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(279, 334);
-            this.listBox1.TabIndex = 14;
-            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
-            this.listBox1.DragDrop += new System.Windows.Forms.DragEventHandler(this.listBox1_DragDrop);
-            this.listBox1.DragEnter += new System.Windows.Forms.DragEventHandler(this.listBox1_DragEnter);
+            listBox1.AllowDrop = true;
+            listBox1.FormattingEnabled = true;
+            listBox1.ItemHeight = 15;
+            listBox1.Location = new Point(1219, 546);
+            listBox1.Name = "listBox1";
+            listBox1.Size = new Size(279, 244);
+            listBox1.TabIndex = 14;
+            listBox1.SelectedIndexChanged += listBox1_SelectedIndexChanged;
+            listBox1.DragDrop += listBox1_DragDrop;
+            listBox1.DragEnter += listBox1_DragEnter;
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(1218, 426);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(66, 15);
-            this.label2.TabIndex = 15;
-            this.label2.Text = "Image Files";
+            label2.AutoSize = true;
+            label2.Location = new Point(1218, 525);
+            label2.Name = "label2";
+            label2.Size = new Size(66, 15);
+            label2.TabIndex = 15;
+            label2.Text = "Image Files";
+            // 
+            // checkBox1
+            // 
+            checkBox1.AutoSize = true;
+            checkBox1.Checked = true;
+            checkBox1.CheckState = CheckState.Checked;
+            checkBox1.Location = new Point(1233, 148);
+            checkBox1.Name = "checkBox1";
+            checkBox1.Size = new Size(51, 19);
+            checkBox1.TabIndex = 17;
+            checkBox1.Text = "DDN";
+            checkBox1.UseVisualStyleBackColor = true;
+            checkBox1.CheckedChanged += checkBox_CheckedChanged;
+            // 
+            // checkBox2
+            // 
+            checkBox2.AutoSize = true;
+            checkBox2.Checked = true;
+            checkBox2.CheckState = CheckState.Checked;
+            checkBox2.Location = new Point(1316, 148);
+            checkBox2.Name = "checkBox2";
+            checkBox2.Size = new Size(51, 19);
+            checkBox2.TabIndex = 18;
+            checkBox2.Text = "DBR ";
+            checkBox2.UseVisualStyleBackColor = true;
+            checkBox2.CheckedChanged += checkBox_CheckedChanged;
+            // 
+            // checkBox3
+            // 
+            checkBox3.AutoSize = true;
+            checkBox3.Checked = true;
+            checkBox3.CheckState = CheckState.Checked;
+            checkBox3.Location = new Point(1404, 148);
+            checkBox3.Name = "checkBox3";
+            checkBox3.Size = new Size(51, 19);
+            checkBox3.TabIndex = 19;
+            checkBox3.Text = "MRZ";
+            checkBox3.UseVisualStyleBackColor = true;
+            checkBox3.CheckedChanged += checkBox_CheckedChanged;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(1507, 819);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.listBox1);
-            this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.richTextBox1);
-            this.Controls.Add(this.pictureBox2);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.menuStrip1);
-            this.Controls.Add(this.menuStrip2);
-            this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(4);
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            AutoScroll = true;
+            ClientSize = new Size(1500, 850);
+            Controls.Add(checkBox3);
+            Controls.Add(checkBox2);
+            Controls.Add(checkBox1);
+            Controls.Add(label2);
+            Controls.Add(listBox1);
+            Controls.Add(statusStrip1);
+            Controls.Add(label1);
+            Controls.Add(richTextBox1);
+            Controls.Add(pictureBox2);
+            Controls.Add(button1);
+            Controls.Add(button2);
+            Controls.Add(pictureBox1);
+            Controls.Add(menuStrip1);
+            Controls.Add(menuStrip2);
+            MainMenuStrip = menuStrip1;
+            Margin = new Padding(4);
             this.MaximizeBox = false;
-            this.Name = "Form1";
-            this.Text = ".NET Dynamsoft Capture Vision Demo";
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            this.menuStrip2.ResumeLayout(false);
-            this.menuStrip2.PerformLayout();
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            Name = "Form1";
+            Text = ".NET Dynamsoft Capture Vision Demo";
+            WindowState = FormWindowState.Normal;
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
+            menuStrip2.ResumeLayout(false);
+            menuStrip2.PerformLayout();
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private PictureBox pictureBox1;
+        private Button button1;
+        private Button button2;
         private PictureBox pictureBox2;
         private RichTextBox richTextBox1;
         private Label label1;
@@ -225,6 +268,9 @@
         private ToolStripStatusLabel toolStripStatusLabel1;
         private ListBox listBox1;
         private Label label2;
+        private CheckBox checkBox1;
+        private CheckBox checkBox2;
+        private CheckBox checkBox3;
     }
 }
 

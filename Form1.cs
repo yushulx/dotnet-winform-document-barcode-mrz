@@ -1,26 +1,35 @@
 ﻿using System.Drawing.Imaging;
 using Dynamsoft;
-using Result = Dynamsoft.MrzScanner.Result;
 using OpenCvSharp;
 using OpenCvSharp.Extensions;
 using Point = OpenCvSharp.Point;
 using static Dynamsoft.MrzScanner;
+using static Dynamsoft.DocumentScanner;
+using static Dynamsoft.BarcodeQRCodeReader;
 using System.Text.Json.Nodes;
 using System;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Runtime.InteropServices;
 
+using MrzResult = Dynamsoft.MrzScanner.Result;
+using DocResult = Dynamsoft.DocumentScanner.Result;
+using BarcodeResult = Dynamsoft.BarcodeQRCodeReader.Result;
+
 namespace Test
 {
     public partial class Form1 : Form
     {
-        private MrzScanner scanner;
+        private MrzScanner mrzScanner;
+        private DocumentScanner documentScanner;
+        private BarcodeQRCodeReader barcodeScanner;
         private VideoCapture capture;
         private bool isCapturing;
         private Thread? thread;
         private Mat _mat = new Mat();
-        private Result[]? _results;
+        private DocResult[]? _docResults;
+        private MrzResult[]? _mrzResults;
+        private string? _currentFilename = "";
 
         public Form1()
         {
@@ -30,20 +39,33 @@ namespace Test
 
             ActivateLicense(license);
 
-            scanner = MrzScanner.Create();
+            // Initialize camera
             capture = new VideoCapture(0);
             isCapturing = false;
-            scanner.LoadModel();
+
+            // Initialize MRZ scanner
+            mrzScanner = MrzScanner.Create();
+            mrzScanner.LoadModel();
+
+            // Initialize document scanner
+            documentScanner = DocumentScanner.Create();
+            documentScanner.SetParameters(DocumentScanner.Templates.color);
+
+            // Initialize barcode scanner
+            barcodeScanner = BarcodeQRCodeReader.Create();
         }
-        
+
         private void ActivateLicense(string license)
         {
-            int ret = MrzScanner.InitLicense(license); // Get a license key from https://www.dynamsoft.com/customer/license/trialLicense?product=dlr
-            if (ret != 0) 
+            int ret = MrzScanner.InitLicense(license); // Get a license key from https://www.dynamsoft.com/customer/license/trialLicense
+            ret = DocumentScanner.InitLicense(license);
+            BarcodeQRCodeReader.InitLicense(license);
+            if (ret != 0)
             {
                 toolStripStatusLabel1.Text = "License is invalid.";
             }
-            else {
+            else
+            {
                 toolStripStatusLabel1.Text = "License is activated successfully.";
             }
         }
@@ -52,25 +74,27 @@ namespace Test
         {
             base.OnFormClosing(e);
             // Code
-            scanner.Destroy();
+            mrzScanner.Destroy();
+            documentScanner.Destroy();
+            barcodeScanner.Destroy();
         }
 
-        private void ShowResults(Result[] results)
-        {
-            if (results == null)
-                return;
-        }
-        private Bitmap DecodeMat(Mat mat)
+        // private void ShowResults(Result[] results)
+        // {
+        //     if (results == null)
+        //         return;
+        // }
+        private Mat DetectMrz(Mat mat)
         {
             int length = mat.Cols * mat.Rows * mat.ElemSize();
             byte[] bytes = new byte[length];
             Marshal.Copy(mat.Data, bytes, 0, length);
-            _results = scanner.DetectBuffer(bytes, mat.Cols, mat.Rows, (int)mat.Step(), MrzScanner.ImagePixelFormat.IPF_RGB_888);
-            if (_results != null)
+            _mrzResults = mrzScanner.DetectBuffer(bytes, mat.Cols, mat.Rows, (int)mat.Step(), MrzScanner.ImagePixelFormat.IPF_RGB_888);
+            if (_mrzResults != null)
             {
-                string[] lines = new string[_results.Length];
+                string[] lines = new string[_mrzResults.Length];
                 var index = 0;
-                foreach (Result result in _results)
+                foreach (MrzResult result in _mrzResults)
                 {
                     lines[index++] = result.Text;
                     richTextBox1.Text += result.Text + Environment.NewLine;
@@ -89,26 +113,155 @@ namespace Test
                 if (info != null) richTextBox1.Text = info.ToString();
             }
 
-            Bitmap bitmap = BitmapConverter.ToBitmap(mat);
-            return bitmap;
+            return mat;
         }
 
-        private void MrzDetection(string filename)
+        private void DetectFile(string filename)
         {
+            richTextBox1.Text = "";
             try
             {
                 _mat = Cv2.ImRead(filename, ImreadModes.Color);
                 Mat copy = new Mat(_mat.Rows, _mat.Cols, MatType.CV_8UC3);
                 _mat.CopyTo(copy);
-                pictureBox1.Image = BitmapConverter.ToBitmap(copy);
-                pictureBox2.Image = DecodeMat(copy);
+                if (checkBox1.Checked)
+                {
+                    pictureBox1.Image = DetectDocumentEdges(copy);
+                    PreviewNormalizedImage();
+                }
+                else
+                {
+                    pictureBox1.Image = BitmapConverter.ToBitmap(copy);
+
+                    if (checkBox2.Checked)
+                    {
+                        copy = DetectBarcode(copy);
+                    }
+
+                    if (checkBox3.Checked) {
+                        copy = DetectMrz(copy);
+                    }
+                    pictureBox2.Image = BitmapConverter.ToBitmap(copy);
+                }
+
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
         }
-        
+
+        private Mat DetectBarcode(Mat mat)
+        {
+            int length = mat.Cols * mat.Rows * mat.ElemSize();
+            byte[] bytes = new byte[length];
+            Marshal.Copy(mat.Data, bytes, 0, length);
+
+            BarcodeResult[]? results = barcodeScanner.DecodeBuffer(bytes, mat.Cols, mat.Rows, (int)mat.Step(), BarcodeQRCodeReader.ImagePixelFormat.IPF_RGB_888);
+            if (results != null)
+            {
+                foreach (BarcodeResult result in results)
+                {
+                    string output = "Text: " + result.Text + Environment.NewLine + "Format: " + result.Format1 + Environment.NewLine;
+                    richTextBox1.AppendText(output);
+                    richTextBox1.AppendText(Environment.NewLine);
+                    int[]? points = result.Points;
+                    if (points != null)
+                    {
+                        OpenCvSharp.Point[] all = new OpenCvSharp.Point[4];
+                        int xMin = points[0], yMax = points[1];
+                        all[0] = new OpenCvSharp.Point(xMin, yMax);
+                        for (int i = 2; i < 7; i += 2)
+                        {
+                            int x = points[i];
+                            int y = points[i + 1];
+                            OpenCvSharp.Point p = new OpenCvSharp.Point(x, y);
+                            xMin = x < xMin ? x : xMin;
+                            yMax = y > yMax ? y : yMax;
+                            all[i / 2] = p;
+                        }
+                        OpenCvSharp.Point[][] contours = new OpenCvSharp.Point[][] { all };
+                        Cv2.DrawContours(mat, contours, 0, new Scalar(0, 0, 255), 2);
+                        if (result.Text != null) Cv2.PutText(mat, result.Text, new OpenCvSharp.Point(xMin, yMax), HersheyFonts.HersheySimplex, 1, new Scalar(0, 0, 255), 2);
+                    }
+                }
+            }
+            else
+            {
+                richTextBox1.AppendText("No barcode detected!" + Environment.NewLine);
+            }
+
+            return mat;
+        }
+
+        private Bitmap DetectDocumentEdges(Mat mat)
+        {
+            int length = mat.Cols * mat.Rows * mat.ElemSize();
+            byte[] bytes = new byte[length];
+            Marshal.Copy(mat.Data, bytes, 0, length);
+
+            _docResults = documentScanner.DetectBuffer(bytes, mat.Cols, mat.Rows, (int)mat.Step(), DocumentScanner.ImagePixelFormat.IPF_RGB_888);
+            if (_docResults != null)
+            {
+                DocResult result = _docResults[0];
+                if (result.Points != null)
+                {
+                    Point[] points = new Point[4];
+                    for (int i = 0; i < 4; i++)
+                    {
+                        points[i] = new Point(result.Points[i * 2], result.Points[i * 2 + 1]);
+                    }
+                    Cv2.DrawContours(mat, new Point[][] { points }, 0, Scalar.Red, 2);
+                }
+            }
+
+            Bitmap bitmap = BitmapConverter.ToBitmap(mat);
+            return bitmap;
+        }
+
+        private void PreviewNormalizedImage()
+        {
+            if (_docResults != null)
+            {
+                DocResult result = _docResults[0];
+                int length = _mat.Cols * _mat.Rows * _mat.ElemSize();
+                byte[] bytes = new byte[length];
+                Marshal.Copy(_mat.Data, bytes, 0, length);
+
+                NormalizedImage image = documentScanner.NormalizeBuffer(bytes, _mat.Cols, _mat.Rows, (int)_mat.Step(), DocumentScanner.ImagePixelFormat.IPF_RGB_888, result.Points);
+                if (image != null && image.Data != null)
+                {
+                    Mat newMat;
+                    if (image.Stride < image.Width)
+                    {
+                        // binary
+                        byte[] data = image.Binary2Grayscale();
+                        newMat = new Mat(image.Height, image.Width, MatType.CV_8UC1, data);
+                    }
+                    else if (image.Stride >= image.Width * 3)
+                    {
+                        // color
+                        newMat = new Mat(image.Height, image.Width, MatType.CV_8UC3, image.Data);
+                    }
+                    else
+                    {
+                        // grayscale
+                        newMat = new Mat(image.Height, image.Stride, MatType.CV_8UC1, image.Data);
+                    }
+
+                    if (checkBox2.Checked)
+                    {
+                        newMat = DetectBarcode(newMat);
+                    }
+
+                    if (checkBox3.Checked) {
+                        newMat = DetectMrz(newMat);
+                    }
+                    pictureBox2.Image = BitmapConverter.ToBitmap(newMat);
+                }
+            }
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             StopScan();
@@ -120,7 +273,8 @@ namespace Test
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     listBox1.Items.Add(dlg.FileName);
-                    MrzDetection(dlg.FileName);
+                    _currentFilename = dlg.FileName;
+                    DetectFile(dlg.FileName);
                 }
             }
         }
@@ -165,7 +319,7 @@ namespace Test
                 capture.Read(_mat);
                 Mat copy = new Mat(_mat.Rows, _mat.Cols, MatType.CV_8UC3);
                 _mat.CopyTo(copy);
-                pictureBox1.Image = DecodeMat(copy);
+                pictureBox1.Image = BitmapConverter.ToBitmap(DetectMrz(copy));
             }
         }
 
@@ -217,10 +371,10 @@ namespace Test
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string? filename = listBox1.SelectedItem.ToString();
-            if (filename != null)
+            _currentFilename = listBox1.SelectedItem.ToString();
+            if (_currentFilename != null && _currentFilename != "")
             {
-                MrzDetection(filename);
+                DetectFile(_currentFilename);
             }
         }
 
@@ -241,6 +395,14 @@ namespace Test
                 {
                     listBox1.Items.Add(file);
                 }
+            }
+        }
+
+        private void checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (_currentFilename != null && _currentFilename != "")
+            {
+                DetectFile(_currentFilename);
             }
         }
     }
