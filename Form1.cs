@@ -55,9 +55,10 @@ namespace Test
             barcodeScanner = BarcodeQRCodeReader.Create();
         }
 
+        // Get a license key from https://www.dynamsoft.com/customer/license/trialLicense
         private void ActivateLicense(string license)
         {
-            int ret = MrzScanner.InitLicense(license); // Get a license key from https://www.dynamsoft.com/customer/license/trialLicense
+            int ret = MrzScanner.InitLicense(license);
             ret = DocumentScanner.InitLicense(license);
             BarcodeQRCodeReader.InitLicense(license);
             if (ret != 0)
@@ -79,12 +80,44 @@ namespace Test
             barcodeScanner.Destroy();
         }
 
-        // private void ShowResults(Result[] results)
-        // {
-        //     if (results == null)
-        //         return;
-        // }
-        private Mat DetectMrz(Mat mat)
+        private void DetectFile(string filename)
+        {
+            richTextBoxInfo.Text = "";
+            try
+            {
+                _mat = Cv2.ImRead(filename, ImreadModes.Color);
+                Mat copy = new Mat(_mat.Rows, _mat.Cols, MatType.CV_8UC3);
+                _mat.CopyTo(copy);
+                if (checkBoxDdn.Checked)
+                {
+                    copy = DetectDocument(_mat, copy);
+                    pictureBoxSrc.Image = BitmapConverter.ToBitmap(copy);
+                    PreviewNormalizedImage();
+                }
+                else
+                {
+                    pictureBoxSrc.Image = BitmapConverter.ToBitmap(copy);
+
+                    if (checkBoxDbr.Checked)
+                    {
+                        copy = DetectBarcode(_mat, copy);
+                    }
+
+                    if (checkBoxMrz.Checked)
+                    {
+                        copy = DetectMrz(_mat, copy);
+                    }
+                    pictureBoxDest.Image = BitmapConverter.ToBitmap(copy);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private Mat DetectMrz(Mat mat, Mat canvas)
         {
             int length = mat.Cols * mat.Rows * mat.ElemSize();
             byte[] bytes = new byte[length];
@@ -97,7 +130,7 @@ namespace Test
                 foreach (MrzResult result in _mrzResults)
                 {
                     lines[index++] = result.Text;
-                    richTextBox1.Text += result.Text + Environment.NewLine;
+                    richTextBoxInfo.Text += result.Text + Environment.NewLine;
                     if (result.Points != null)
                     {
                         Point[] points = new Point[4];
@@ -105,53 +138,18 @@ namespace Test
                         {
                             points[i] = new Point(result.Points[i * 2], result.Points[i * 2 + 1]);
                         }
-                        Cv2.DrawContours(mat, new Point[][] { points }, 0, Scalar.Red, 2);
+                        Cv2.DrawContours(canvas, new Point[][] { points }, 0, Scalar.Red, 2);
                     }
                 }
 
                 JsonNode? info = Parse(lines);
-                if (info != null) richTextBox1.Text = info.ToString();
+                if (info != null) richTextBoxInfo.Text = info.ToString();
             }
 
-            return mat;
+            return canvas;
         }
 
-        private void DetectFile(string filename)
-        {
-            richTextBox1.Text = "";
-            try
-            {
-                _mat = Cv2.ImRead(filename, ImreadModes.Color);
-                Mat copy = new Mat(_mat.Rows, _mat.Cols, MatType.CV_8UC3);
-                _mat.CopyTo(copy);
-                if (checkBox1.Checked)
-                {
-                    pictureBox1.Image = DetectDocumentEdges(copy);
-                    PreviewNormalizedImage();
-                }
-                else
-                {
-                    pictureBox1.Image = BitmapConverter.ToBitmap(copy);
-
-                    if (checkBox2.Checked)
-                    {
-                        copy = DetectBarcode(copy);
-                    }
-
-                    if (checkBox3.Checked) {
-                        copy = DetectMrz(copy);
-                    }
-                    pictureBox2.Image = BitmapConverter.ToBitmap(copy);
-                }
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        private Mat DetectBarcode(Mat mat)
+        private Mat DetectBarcode(Mat mat, Mat canvas)
         {
             int length = mat.Cols * mat.Rows * mat.ElemSize();
             byte[] bytes = new byte[length];
@@ -163,8 +161,8 @@ namespace Test
                 foreach (BarcodeResult result in results)
                 {
                     string output = "Text: " + result.Text + Environment.NewLine + "Format: " + result.Format1 + Environment.NewLine;
-                    richTextBox1.AppendText(output);
-                    richTextBox1.AppendText(Environment.NewLine);
+                    richTextBoxInfo.AppendText(output);
+                    richTextBoxInfo.AppendText(Environment.NewLine);
                     int[]? points = result.Points;
                     if (points != null)
                     {
@@ -181,20 +179,19 @@ namespace Test
                             all[i / 2] = p;
                         }
                         OpenCvSharp.Point[][] contours = new OpenCvSharp.Point[][] { all };
-                        Cv2.DrawContours(mat, contours, 0, new Scalar(0, 0, 255), 2);
-                        if (result.Text != null) Cv2.PutText(mat, result.Text, new OpenCvSharp.Point(xMin, yMax), HersheyFonts.HersheySimplex, 1, new Scalar(0, 0, 255), 2);
+                        Cv2.DrawContours(canvas, contours, 0, new Scalar(0, 255, 0), 2);
+                        if (result.Text != null) Cv2.PutText(canvas, result.Text, new OpenCvSharp.Point(xMin, yMax), HersheyFonts.HersheySimplex, 1, new Scalar(0, 0, 255), 2);
                     }
                 }
             }
-            else
-            {
-                richTextBox1.AppendText("No barcode detected!" + Environment.NewLine);
-            }
-
-            return mat;
+            // else
+            // {
+            //     richTextBoxInfo.AppendText("No barcode detected!" + Environment.NewLine);
+            // }
+            return canvas;
         }
 
-        private Bitmap DetectDocumentEdges(Mat mat)
+        private Mat DetectDocument(Mat mat, Mat canvas)
         {
             int length = mat.Cols * mat.Rows * mat.ElemSize();
             byte[] bytes = new byte[length];
@@ -211,12 +208,10 @@ namespace Test
                     {
                         points[i] = new Point(result.Points[i * 2], result.Points[i * 2 + 1]);
                     }
-                    Cv2.DrawContours(mat, new Point[][] { points }, 0, Scalar.Red, 2);
+                    Cv2.DrawContours(canvas, new Point[][] { points }, 0, Scalar.Blue, 2);
                 }
             }
-
-            Bitmap bitmap = BitmapConverter.ToBitmap(mat);
-            return bitmap;
+            return canvas;
         }
 
         private void PreviewNormalizedImage()
@@ -249,20 +244,24 @@ namespace Test
                         newMat = new Mat(image.Height, image.Stride, MatType.CV_8UC1, image.Data);
                     }
 
-                    if (checkBox2.Checked)
+                    Mat copy = new Mat(_mat.Rows, _mat.Cols, MatType.CV_8UC3);
+                    newMat.CopyTo(copy);
+
+                    if (checkBoxDbr.Checked)
                     {
-                        newMat = DetectBarcode(newMat);
+                        copy = DetectBarcode(newMat, copy);
                     }
 
-                    if (checkBox3.Checked) {
-                        newMat = DetectMrz(newMat);
+                    if (checkBoxMrz.Checked)
+                    {
+                        copy = DetectMrz(newMat, copy);
                     }
-                    pictureBox2.Image = BitmapConverter.ToBitmap(newMat);
+                    pictureBoxDest.Image = BitmapConverter.ToBitmap(copy);
                 }
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonFile_Click(object sender, EventArgs e)
         {
             StopScan();
             using (OpenFileDialog dlg = new OpenFileDialog())
@@ -279,7 +278,7 @@ namespace Test
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void buttonCamera_Click(object sender, EventArgs e)
         {
             if (!capture.IsOpened())
             {
@@ -287,7 +286,7 @@ namespace Test
                 return;
             }
 
-            if (button2.Text == "Camera Scan")
+            if (buttonCamera.Text == "Camera Scan")
             {
                 StartScan();
             }
@@ -299,7 +298,7 @@ namespace Test
 
         private void StartScan()
         {
-            button2.Text = "Stop";
+            buttonCamera.Text = "Stop";
             isCapturing = true;
             thread = new Thread(new ThreadStart(FrameCallback));
             thread.Start();
@@ -307,7 +306,7 @@ namespace Test
 
         private void StopScan()
         {
-            button2.Text = "Camera Scan";
+            buttonCamera.Text = "Camera Scan";
             isCapturing = false;
             if (thread != null) thread.Join();
         }
@@ -319,7 +318,32 @@ namespace Test
                 capture.Read(_mat);
                 Mat copy = new Mat(_mat.Rows, _mat.Cols, MatType.CV_8UC3);
                 _mat.CopyTo(copy);
-                pictureBox1.Image = BitmapConverter.ToBitmap(DetectMrz(copy));
+
+                if (checkBoxDdn.Checked)
+                {
+                    copy = DetectDocument(_mat, copy);
+                }
+
+                if (checkBoxDbr.Checked)
+                {
+                    copy = DetectBarcode(_mat, copy);
+                }
+
+                if (checkBoxMrz.Checked)
+                {
+                    copy = DetectMrz(_mat, copy);
+                }
+
+                pictureBoxSrc.Image = BitmapConverter.ToBitmap(copy);
+            }
+
+            if (checkBoxDdn.Checked)
+            {
+                PreviewNormalizedImage();
+            }
+            else
+            {
+                pictureBoxDest.Image = pictureBoxSrc.Image;
             }
         }
 
@@ -400,9 +424,22 @@ namespace Test
 
         private void checkBox_CheckedChanged(object sender, EventArgs e)
         {
+            if (isCapturing) return;
             if (_currentFilename != null && _currentFilename != "")
             {
                 DetectFile(_currentFilename);
+            }
+        }
+
+        private void buttonSave_Click(object sender, EventArgs e)
+        {
+            
+            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                string path = Path.Join(folderBrowserDialog.SelectedPath, DateTime.Now.ToFileTimeUtc() + ".jpg");
+                pictureBoxDest.Image.Save(path, ImageFormat.Jpeg);
+                MessageBox.Show("Saved to " + folderBrowserDialog.SelectedPath);
             }
         }
     }
