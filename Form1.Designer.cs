@@ -155,14 +155,16 @@
             // dDNToolStripMenuItem
             // 
             dDNToolStripMenuItem.Name = "dDNToolStripMenuItem";
-            dDNToolStripMenuItem.Size = new Size(99, 22);
+            dDNToolStripMenuItem.Size = new Size(180, 22);
             dDNToolStripMenuItem.Text = "DDN";
+            dDNToolStripMenuItem.Click += dDNToolStripMenuItem_Click;
             // 
             // dBRToolStripMenuItem
             // 
             dBRToolStripMenuItem.Name = "dBRToolStripMenuItem";
-            dBRToolStripMenuItem.Size = new Size(99, 22);
+            dBRToolStripMenuItem.Size = new Size(180, 22);
             dBRToolStripMenuItem.Text = "DBR";
+            dBRToolStripMenuItem.Click += dBRToolStripMenuItem_Click;
             // 
             // statusStrip1
             // 

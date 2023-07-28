@@ -433,13 +433,31 @@ namespace Test
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
-            
+
             FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
             if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
             {
                 string path = Path.Join(folderBrowserDialog.SelectedPath, DateTime.Now.ToFileTimeUtc() + ".jpg");
                 pictureBoxDest.Image.Save(path, ImageFormat.Jpeg);
                 MessageBox.Show("Saved to " + folderBrowserDialog.SelectedPath);
+            }
+        }
+
+        private void dDNToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string template = InputBox("Set DDN Template", "", "");
+            if (template != null && template != "")
+            {
+                documentScanner.SetParameters(template);
+            }
+        }
+
+        private void dBRToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string template = InputBox("Set DBR Template", "", "");
+            if (template != null && template != "")
+            {
+                barcodeScanner.SetParameters(template);
             }
         }
     }
