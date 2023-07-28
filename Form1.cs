@@ -51,7 +51,7 @@ namespace Test
 
             // Initialize MRZ scanner
             mrzScanner = MrzScanner.Create();
-            mrzScanner.LoadModel(modelPath);
+            mrzScanner.LoadModel();
 
             // Initialize document scanner
             documentScanner = DocumentScanner.Create();
