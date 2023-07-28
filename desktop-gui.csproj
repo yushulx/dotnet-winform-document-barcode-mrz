@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="BarcodeQRCodeSDK " Version="2.3.4" />
     <PackageReference Include="DocumentScannerSDK " Version="1.1.0" />
-    <PackageReference Include="MrzScannerSDK" Version="1.1.0" />
+    <PackageReference Include="MrzScannerSDK" Version="1.2.0" />
     <PackageReference Include="OpenCvSharp4" Version="4.6.0.20220608" />
   </ItemGroup>
   <ItemGroup>

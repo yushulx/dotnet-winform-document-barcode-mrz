@@ -33,6 +33,12 @@ namespace Test
 
         public Form1()
         {
+            string? assemblyPath = System.IO.Path.GetDirectoryName(
+                System.Reflection.Assembly.GetExecutingAssembly().Location
+            );
+
+            string modelPath = assemblyPath == null ? "" : Path.Join(assemblyPath, "model");
+
             InitializeComponent();
             FormClosing += new FormClosingEventHandler(Form1_Closing);
             string license = "DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ==";
@@ -45,7 +51,7 @@ namespace Test
 
             // Initialize MRZ scanner
             mrzScanner = MrzScanner.Create();
-            mrzScanner.LoadModel();
+            mrzScanner.LoadModel(modelPath);
 
             // Initialize document scanner
             documentScanner = DocumentScanner.Create();
@@ -130,7 +136,10 @@ namespace Test
                 foreach (MrzResult result in _mrzResults)
                 {
                     lines[index++] = result.Text;
-                    richTextBoxInfo.Text += result.Text + Environment.NewLine;
+                    this.BeginInvoke((MethodInvoker)delegate {
+                        richTextBoxInfo.Text += result.Text + Environment.NewLine;
+                    });
+                    
                     if (result.Points != null)
                     {
                         Point[] points = new Point[4];
@@ -143,7 +152,13 @@ namespace Test
                 }
 
                 JsonNode? info = Parse(lines);
-                if (info != null) richTextBoxInfo.Text = info.ToString();
+                if (info != null)
+                {
+                    this.BeginInvoke((MethodInvoker)delegate {
+                        richTextBoxInfo.Text = info.ToString();
+                    });
+                    
+                }
             }
 
             return canvas;
@@ -161,8 +176,11 @@ namespace Test
                 foreach (BarcodeResult result in results)
                 {
                     string output = "Text: " + result.Text + Environment.NewLine + "Format: " + result.Format1 + Environment.NewLine;
-                    richTextBoxInfo.AppendText(output);
-                    richTextBoxInfo.AppendText(Environment.NewLine);
+                    this.BeginInvoke((MethodInvoker)delegate {
+                        richTextBoxInfo.AppendText(output);
+                        richTextBoxInfo.AppendText(Environment.NewLine);
+                    });
+                        
                     int[]? points = result.Points;
                     if (points != null)
                     {
