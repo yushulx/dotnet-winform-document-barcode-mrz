@@ -9,3 +9,5 @@ This project demonstrates how to use Dynamsoft Document Normalizer, Dynamsoft Ba
     ```
 
 2. Build and run the project via command line `dotnet run` or Visual Studio.
+     
+   ![dotnet-document-mrz-barcode-recognition](https://github.com/yushulx/dotnet-winform-document-barcode-mrz/assets/2202306/9f393959-95fd-41a7-b8f3-6e365e987613)
