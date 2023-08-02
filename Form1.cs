@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using MrzResult = Dynamsoft.MrzScanner.Result;
 using DocResult = Dynamsoft.DocumentScanner.Result;
 using BarcodeResult = Dynamsoft.BarcodeQRCodeReader.Result;
+using System.Diagnostics;
 
 namespace Test
 {
@@ -136,10 +137,11 @@ namespace Test
                 foreach (MrzResult result in _mrzResults)
                 {
                     lines[index++] = result.Text;
-                    this.BeginInvoke((MethodInvoker)delegate {
+                    this.BeginInvoke((MethodInvoker)delegate
+                    {
                         richTextBoxInfo.Text += result.Text + Environment.NewLine;
                     });
-                    
+
                     if (result.Points != null)
                     {
                         Point[] points = new Point[4];
@@ -154,10 +156,11 @@ namespace Test
                 JsonNode? info = Parse(lines);
                 if (info != null)
                 {
-                    this.BeginInvoke((MethodInvoker)delegate {
+                    this.BeginInvoke((MethodInvoker)delegate
+                    {
                         richTextBoxInfo.Text = info.ToString();
                     });
-                    
+
                 }
             }
 
@@ -170,17 +173,29 @@ namespace Test
             byte[] bytes = new byte[length];
             Marshal.Copy(mat.Data, bytes, 0, length);
 
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
             BarcodeResult[]? results = barcodeScanner.DecodeBuffer(bytes, mat.Cols, mat.Rows, (int)mat.Step(), BarcodeQRCodeReader.ImagePixelFormat.IPF_RGB_888);
+            stopwatch.Stop();
+
+            this.BeginInvoke((MethodInvoker)delegate
+            {
+                String elpasedTime = String.Format("Time elapsed (in ms): {0}", stopwatch.ElapsedMilliseconds);
+                richTextBoxInfo.AppendText(elpasedTime);
+                richTextBoxInfo.AppendText(Environment.NewLine);
+            });
+
             if (results != null)
             {
                 foreach (BarcodeResult result in results)
                 {
                     string output = "Text: " + result.Text + Environment.NewLine + "Format: " + result.Format1 + Environment.NewLine;
-                    this.BeginInvoke((MethodInvoker)delegate {
+                    this.BeginInvoke((MethodInvoker)delegate
+                    {
                         richTextBoxInfo.AppendText(output);
                         richTextBoxInfo.AppendText(Environment.NewLine);
                     });
-                        
+
                     int[]? points = result.Points;
                     if (points != null)
                     {
