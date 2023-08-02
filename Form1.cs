@@ -382,7 +382,7 @@ namespace Test
         public static string InputBox(string title, string promptText, string value)
         {
             Form form = new Form();
-            TextBox textBox = new TextBox();
+            RichTextBox textBox = new RichTextBox();
             Button buttonOk = new Button();
             Button buttonCancel = new Button();
 
